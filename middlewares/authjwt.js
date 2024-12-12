@@ -5,8 +5,6 @@ const User = db.user;
 
 verifyToken = (req, res, next) => {
   let token = req.session.token || req.headers["authorization"];
-
-  // If token is provided via Bearer in the Authorization header, remove "Bearer " prefix
   if (token && token.startsWith("Bearer ")) {
     token = token.slice(7, token.length); // Remove "Bearer " from the token
   }
