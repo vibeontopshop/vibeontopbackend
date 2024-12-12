@@ -4,7 +4,6 @@ const db = require("../models/index.model.js");
 const User = db.user;
 
 verifyToken = (req, res, next) => {
-  // Check if token is available in session or Authorization header
   let token = req.session.token || req.headers["authorization"];
 
   // If token is provided via Bearer in the Authorization header, remove "Bearer " prefix
