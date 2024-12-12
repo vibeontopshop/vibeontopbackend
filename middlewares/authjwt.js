@@ -6,7 +6,7 @@ const User = db.user;
 verifyToken = (req, res, next) => {
   let token = req.session.token || req.headers["authorization"];
   if (token && token.startsWith("Bearer ")) {
-    token = token.slice(7, token.length); // Remove "Bearer " from the token
+    token = token.slice(7, token.length);
   }
 
   if (!token) {
