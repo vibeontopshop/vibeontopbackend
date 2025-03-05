@@ -7,24 +7,36 @@ const bcrypt = require("bcryptjs");
 exports.signup = async (req, res) => {
   try {
     const { email, password, FirstName, role } = req.body;
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).send({ message: "User already exists." });
     }
+
     const hashedPassword = bcrypt.hashSync(password, 8);
+
     const user = new User({
       FirstName,
       role,
       email,
       password: hashedPassword,
     });
+
     await user.save();
-    res.status(201).send({ message: "User registered successfully!" });
+
+    const token = jwt.sign({ id: user._id }, config.secret, { expiresIn: 86400 });
+
+    res.status(201).send({
+      message: "User registered successfully!",
+      accessToken: token, 
+    });
+
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Something went wrong during registration." });
   }
 };
+
 
 exports.signin = async (req, res) => {
   try {
