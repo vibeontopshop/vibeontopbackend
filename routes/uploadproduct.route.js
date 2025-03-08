@@ -17,7 +17,11 @@ module.exports = function (app) {
         controller.AddProductDetails
     ),
     app.post(
-        "/api/profiledetails/updatepeoduct",
+        "/api/productdetails/updateproduct",
         controller.updateproduct
+    ),
+    app.get(
+        "/api/productdetails/getproduct",
+        controller.getProduct
     )
 }
