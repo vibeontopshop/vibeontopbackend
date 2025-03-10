@@ -23,8 +23,8 @@ const Product = mongoose.model(
           discount: {
             type: Number,
           },
-          image: {
-            type: String,
+          images: {
+            type: [String],
           },
 }, {
     timestamps: true,

@@ -1,10 +1,8 @@
 const multer = require("multer");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const cloudinary = require("cloudinary").v2;
-
-// Cloudinary Configuration
 cloudinary.config({
-    cloud_name: "dxsdzgqjs",  // Fixed typo in 'cloud_name'
+    cloud_name: "dxsdzgqjs",  
     api_key: "593513178758813",
     api_secret: "V2KQ5S0J1aD7g1LTl4BDYxmNER4"
 });

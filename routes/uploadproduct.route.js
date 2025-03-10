@@ -9,7 +9,7 @@ module.exports = function (app) {
 
     app.post(
         "/api/productdetails/addproduct",
-        upload.single("image"),
+        upload.array("images",6),
         controller.Addproduct
     ),
     app.post(
@@ -18,10 +18,14 @@ module.exports = function (app) {
     ),
     app.post(
         "/api/productdetails/updateproduct",
+        upload.array("images",6),
         controller.updateproduct
     ),
     app.get(
         "/api/productdetails/getproduct",
         controller.getProduct
+    ),
+    app.get(
+        "/api/product/:id",controller.FindProductById
     )
 }
