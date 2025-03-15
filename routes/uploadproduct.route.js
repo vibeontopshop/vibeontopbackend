@@ -27,5 +27,8 @@ module.exports = function (app) {
     ),
     app.get(
         "/api/product/:id",controller.FindProductById
+    ),
+    app.get(
+        "/api/Products/:id",controller.getsimilerProduct
     )
 }

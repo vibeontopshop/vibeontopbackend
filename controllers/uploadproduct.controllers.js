@@ -3,9 +3,9 @@ const Product = db.product;
 
 exports.Addproduct = async (req, res) => {
     try {
-        const { name, description } = req.body;
+        const { name, description,category} = req.body;
 
-        if (!name || !description || !req.files || req.files.length === 0) {
+        if (!name || !description || !category || !req.files || req.files.length === 0) {
             return res.status(400).json({ error: "All fields, including at least one image, are required" });
         }
         const images = req.files.map(file => file.path);
@@ -13,9 +13,9 @@ exports.Addproduct = async (req, res) => {
         const newProduct = new Product({
             name,
             description,
-            images
+            category,
+            images,
         });
-
         const savedProduct = await newProduct.save();
 
         res.status(201).json({
@@ -27,8 +27,6 @@ exports.Addproduct = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
-
-
 exports.updateproduct = async (req, res) => {
     try {
         const { id, name, description } = req.body;
@@ -38,8 +36,6 @@ exports.updateproduct = async (req, res) => {
         if (!id) {
             return res.status(400).json({ error: "Product ID is required" });
         }
-
-        // Find product by ID (fixed)
         let product = await Product.findById(id);
 
         console.log("Product found:", product);
@@ -47,18 +43,12 @@ exports.updateproduct = async (req, res) => {
         if (!product) {
             return res.status(404).json({ error: "Product not found" });
         }
-
-        // Update fields if they exist
         if (name) product.name = name;
         if (description) product.description = description;
-
-        // If new images are uploaded
         if (req.files && req.files.length > 0) {
             const newImages = req.files.map(file => file.path);
-            product.images.push(...newImages); // Append new images to existing ones
+            product.images.push(...newImages); 
         }
-
-        // Save the updated product
         const updatedProduct = await product.save();
 
         res.status(200).json({
@@ -72,21 +62,35 @@ exports.updateproduct = async (req, res) => {
     }
 };
 
-
 exports.AddProductDetails = async (req, res) => {
     try {
-        const { _id, price, oldPrice, rating, reviews, discount,  } = req.body;
-        
+        const { 
+            _id, 
+            price, 
+            oldPrice, 
+            rating, 
+            reviews, 
+            discount,
+            color,
+            size,
+            weight
+        } = req.body;
+
         const product = await Product.findById(_id);
+
         if (!product) {
             return res.status(404).json({ message: "Product not found" });
         }
+
         product.price = price || product.price;
         product.oldPrice = oldPrice || product.oldPrice;
         product.rating = rating || product.rating;
         product.reviews = reviews || product.reviews;
         product.discount = discount || product.discount;
-        
+        product.color = color || product.color;
+        product.size = size || product.size;
+        product.weight = weight || product.weight;
+
         await product.save();
         res.status(200).json({ message: "Product updated successfully", product });
     } catch (error) {
@@ -114,3 +118,25 @@ exports.FindProductById = async (req , res) =>{
         res.status(500).json({message:error.message})
     }
 }
+exports.getsimilerProduct = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const product = await Product.findById(id);
+  
+      if (!product) {
+        return res.status(404).json({ message: 'Product not found' });
+      }
+      const similarProducts = await Product.find({
+        category: product.category,
+        _id: { $ne: id },
+      });
+  
+      res.json({
+        product,
+        similarProducts,
+      });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+  

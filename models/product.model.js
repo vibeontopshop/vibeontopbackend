@@ -26,6 +26,18 @@ const Product = mongoose.model(
           images: {
             type: [String],
           },
+          category:{
+            type:String,
+          },
+          color:{
+            type:[String],
+          },
+          size:{
+            type:[String],
+          },
+          weight:{
+            type:[String],
+          }
 }, {
     timestamps: true,
     })
