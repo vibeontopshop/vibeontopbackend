@@ -23,18 +23,16 @@ const storage = new CloudinaryStorage({
         return {
             folder: "VibeonTop_products",
             resource_type: "image",
-            public_id: file.originalname.split(".")[0], // Extract filename without extension
+            public_id: file.originalname.split(".")[0],
             format: "jpg",
             transformation: [{ quality: "auto", fetch_format: "auto" }]
         };
     }
 });
-
-// Multer Upload Middleware
 const upload = multer({
     storage: storage,
     limits: {
-        fileSize: 50 * 1024 * 1024, // 50MB Limit
+        fileSize: 100 * 1024 * 1024,
     },
     fileFilter: (req, file, cb) => {
         if (!file) {

@@ -41,12 +41,13 @@ app.get("/", (req, res) => {
 require("./routes/auth.routes")(app);
 require("./routes/uploadproduct.route")(app);
 require("./routes/shipping.route")(app);
+require('./routes/Orders.routes')(app);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
-const url = "http://localhost:" + PORT; 
+const url = "https://vibeontopbackend.onrender.com"
 const interval = 60000; 
 
 function reloadWebsite() {
