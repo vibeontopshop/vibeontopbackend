@@ -5,4 +5,5 @@ db.mongoose = mongoose;
 db.user = require("./users.model");
 db.product = require("./product.model")
 db.orders = require("./orders.model")
+db.Cart = require('./cart.model')
 module.exports=db

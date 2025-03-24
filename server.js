@@ -42,6 +42,7 @@ require("./routes/auth.routes")(app);
 require("./routes/uploadproduct.route")(app);
 require("./routes/shipping.route")(app);
 require('./routes/Orders.routes')(app);
+require('./routes/Cart.routes')(app);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
