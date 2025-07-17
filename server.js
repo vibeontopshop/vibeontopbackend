@@ -3,8 +3,6 @@ const cors = require("cors");
 const cookieSession = require("cookie-session");
 const axios = require("axios");
 
-const dbConfig = require("./config/db.config");
-
 const app = express();
 
 app.use(cors());
