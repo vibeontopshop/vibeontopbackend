@@ -4,9 +4,20 @@ const Product = db.product;
 
 exports.AddToCart = async (req, res) => {
   const userId = req.userId;
+  const userRole = req.userRole; // Assume this is set by authentication middleware
   const { productId, quantity, size, color, Weight } = req.body;
-  if (!productId || !quantity) {
-    return res.status(400).send({ message: "ProductId and quantity are required" });
+
+  const parsedQuantity = parseInt(quantity);
+
+  if (!productId || isNaN(parsedQuantity)) {
+    return res.status(400).send({ message: "Valid productId and quantity are required" });
+  }
+
+  if (userRole === "Business" && parsedQuantity < 100) {
+    return res.status(400).send({ message: "Business users must order at least 100 units." });
+  }
+  if (userRole === "Customer" && parsedQuantity < 1) {
+    return res.status(400).send({ message: "Customer must order at least 1 unit." });
   }
 
   try {
@@ -14,6 +25,7 @@ exports.AddToCart = async (req, res) => {
     if (!product) {
       return res.status(404).send({ message: "Product not found" });
     }
+
     let cart = await Cart.findOne({ userId });
 
     if (!cart) {
@@ -22,7 +34,7 @@ exports.AddToCart = async (req, res) => {
         products: [
           {
             productId,
-            quantity,
+            quantity: parsedQuantity,
             size,
             color,
             Weight,
@@ -31,24 +43,25 @@ exports.AddToCart = async (req, res) => {
       });
     } else {
       const productIndex = cart.products.findIndex(
-        (p) => p.productId.toString() === productId
+        (p) => p.productId.toString() === productId.toString()
       );
 
       if (productIndex > -1) {
-        cart.products[productIndex].quantity += quantity;
+        cart.products[productIndex].quantity += parsedQuantity;
         cart.products[productIndex].size = size;
         cart.products[productIndex].color = color;
         cart.products[productIndex].Weight = Weight;
       } else {
         cart.products.push({
           productId,
-          quantity,
+          quantity: parsedQuantity,
           size,
           color,
           Weight,
         });
       }
     }
+
     await cart.save();
     res.status(200).send({
       message: "Product added to cart",
