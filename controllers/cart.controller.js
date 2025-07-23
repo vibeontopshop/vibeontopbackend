@@ -1,13 +1,13 @@
 const db = require("../models/index.model");
 const Cart = db.Cart;
 const Product = db.product;
-const User=db.user
-exports.addtocart = async (req, res) => {
-  const userId = req.userId;
-  const { productId, quantity, size, color, weight } = req.body;
+const User = db.user;
 
-  if (!productId || !quantity || !size || !color || !weight) {
-    return res.status(400).send({ message: "All fields are required" });
+exports.AddToCart = async (req, res) => {
+  const userId = req.userId;
+  const { productId, quantity, size, color, Weight } = req.body;
+  if (!productId || !quantity) {
+    return res.status(400).send({ message: "ProductId and quantity are required" });
   }
 
   try {
@@ -15,18 +15,15 @@ exports.addtocart = async (req, res) => {
     if (!user) {
       return res.status(404).send({ message: "User not found" });
     }
-
-    if (user.role === "business" && quantity < 100) {
-      return res
-        .status(400)
-        .send({ message: "Minimum quantity for business users is 100" });
+    if (user.role === "Business" && quantity < 100) {
+      return res.status(400).send({ message: "Minimum quantity for business users is 100" });
     }
+    
 
     const product = await Product.findById(productId);
     if (!product) {
       return res.status(404).send({ message: "Product not found" });
     }
-
     let cart = await Cart.findOne({ userId });
 
     if (!cart) {
@@ -38,7 +35,7 @@ exports.addtocart = async (req, res) => {
             quantity,
             size,
             color,
-            weight,
+            Weight,
           },
         ],
       });
@@ -51,27 +48,30 @@ exports.addtocart = async (req, res) => {
         cart.products[productIndex].quantity += quantity;
         cart.products[productIndex].size = size;
         cart.products[productIndex].color = color;
-        cart.products[productIndex].weight = weight;
+        cart.products[productIndex].Weight = Weight;
       } else {
         cart.products.push({
           productId,
           quantity,
           size,
           color,
-          weight,
+          Weight,
         });
       }
     }
-
     await cart.save();
-    res.status(200).send({ message: "Product added to cart", cart });
+    res.status(200).send({
+      message: "Product added to cart",
+      cart,
+    });
   } catch (err) {
     console.error("Error adding product to cart:", err);
     res.status(500).send({
-      message: err.message || "An error occurred while adding to cart",
+      message: err.message || "An error occurred while adding the product to cart",
     });
   }
 };
+  
 exports.getCart = async (req, res) => {
     try {
       const cart = await Cart.findOne({ userId: req.userId }).populate('products.productId');

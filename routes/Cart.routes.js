@@ -9,7 +9,7 @@ module.exports = function(app){
         );
         next();
     });
-    app.post("/api/cart/addtocart",[authJwt.verifyToken],controller.addtocart)
+    app.post("/api/cart/addtocart",[authJwt.verifyToken],controller.AddToCart)
     app.get('/api/cart',[authJwt.verifyToken],controller.getCart);
     app.delete('/api/Cart/remove',[authJwt.verifyToken],controller.RemoveFromCart)
 }

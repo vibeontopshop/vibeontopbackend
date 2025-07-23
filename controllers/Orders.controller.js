@@ -14,7 +14,7 @@ exports.createOrder = async (req , res)=>{
           userId,
           orderItems,
           shippingAddress,
-          paymentMethod, // lowercase here too
+          paymentMethod,
           totalAmount,
           paymentStatus: paymentMethod === 'Cash on Delivery' ? 'Pending' : 'Paid',
           isPaid: paymentMethod !== 'Cash on Delivery',

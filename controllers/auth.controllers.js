@@ -64,6 +64,8 @@ exports.signin = async (req, res) => {
     res.status(200).send({
       id: user._id,
       email: user.email,
+      role: user.role,
+      FirstName: user.FirstName,
       accessToken: token
     });
 
@@ -85,6 +87,8 @@ exports.getusers =async(req,res)=>{
       id: user._id,
       name: user.FirstName,
       email: user.email,
+      role: user.role,
+      FirstName: user.FirstName,
       createdAt: user.createdAt,
     },
   });
