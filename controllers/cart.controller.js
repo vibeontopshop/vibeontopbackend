@@ -1,26 +1,27 @@
 const db = require("../models/index.model");
 const Cart = db.Cart;
 const Product = db.product;
-
-exports.AddToCart = async (req, res) => {
+const User=db.user
+exports.addtocart = async (req, res) => {
   const userId = req.userId;
-  const userRole = req.userRole; // Assume this is set by authentication middleware
-  const { productId, quantity, size, color, Weight } = req.body;
+  const { productId, quantity, size, color, weight } = req.body;
 
-  const parsedQuantity = parseInt(quantity);
-
-  if (!productId || isNaN(parsedQuantity)) {
-    return res.status(400).send({ message: "Valid productId and quantity are required" });
-  }
-
-  if (userRole === "Business" && parsedQuantity < 100) {
-    return res.status(400).send({ message: "Business users must order at least 100 units." });
-  }
-  if (userRole === "Customer" && parsedQuantity < 1) {
-    return res.status(400).send({ message: "Customer must order at least 1 unit." });
+  if (!productId || !quantity || !size || !color || !weight) {
+    return res.status(400).send({ message: "All fields are required" });
   }
 
   try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    if (user.role === "business" && quantity < 100) {
+      return res
+        .status(400)
+        .send({ message: "Minimum quantity for business users is 100" });
+    }
+
     const product = await Product.findById(productId);
     if (!product) {
       return res.status(404).send({ message: "Product not found" });
@@ -34,48 +35,43 @@ exports.AddToCart = async (req, res) => {
         products: [
           {
             productId,
-            quantity: parsedQuantity,
+            quantity,
             size,
             color,
-            Weight,
+            weight,
           },
         ],
       });
     } else {
       const productIndex = cart.products.findIndex(
-        (p) => p.productId.toString() === productId.toString()
+        (p) => p.productId.toString() === productId
       );
 
       if (productIndex > -1) {
-        cart.products[productIndex].quantity += parsedQuantity;
+        cart.products[productIndex].quantity += quantity;
         cart.products[productIndex].size = size;
         cart.products[productIndex].color = color;
-        cart.products[productIndex].Weight = Weight;
+        cart.products[productIndex].weight = weight;
       } else {
         cart.products.push({
           productId,
-          quantity: parsedQuantity,
+          quantity,
           size,
           color,
-          Weight,
+          weight,
         });
       }
     }
 
     await cart.save();
-    res.status(200).send({
-      message: "Product added to cart",
-      cart,
-    });
+    res.status(200).send({ message: "Product added to cart", cart });
   } catch (err) {
     console.error("Error adding product to cart:", err);
     res.status(500).send({
-      message: err.message || "An error occurred while adding the product to cart",
+      message: err.message || "An error occurred while adding to cart",
     });
   }
 };
-
-  
 exports.getCart = async (req, res) => {
     try {
       const cart = await Cart.findOne({ userId: req.userId }).populate('products.productId');
